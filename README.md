@@ -1,18 +1,42 @@
-CivicConnect is a web-based service request management platform designed to improve how facility-related issues are submitted, tracked, assigned, and resolved.
+CivicConnect is a web app for reporting and tracking facility problems at Riverside Community Centre. It replaces reports sent by email, phone, WhatsApp and paper with one place where every request can be followed until it is fixed.
 
-The project focuses on providing a centralised alternative to fragmented reporting through email, telephone, WhatsApp, spreadsheets, and paper-based processes.
+Built for the **SEN381 Software Engineering** project with ASP.NET Core MVC (Razor), cookie sign-in and MongoDB.
 
 ## Features
 
-- Submit and categorise service requests
-- Track request status and history
-- Assign requests to service staff
-- Search, filter, and sort requests
-- Role-based access for different users
-- Record notes and status changes
-- Management views for monitoring requests
-- Audit trail for accountability
+- Report a problem with a type, a room on the floor plan and a priority
+- Three roles: requesters report, staff fix the jobs assigned to them, a supervisor assigns and closes
+- Requests move one step at a time: New, Assigned, In Progress, Resolved, Closed, with a full history
+- In-app updates (the bell) when a job is assigned, started, fixed or closed
+- Facility map showing which rooms have open requests
+- Search and filter by status, and a People page for managing accounts
 
-## Project Scope
+## Running locally
 
-CivicConnect is being developed as part of the **SEN381 Software Engineering** project. The initial milestone focuses on requirements engineering, project scope, stakeholders, functional and non-functional requirements, acceptance criteria, risks, and traceability.
+All data is stored in MongoDB Atlas, in the `civicconnect` database (`users`, `categories`, `requests`). Keep the connection string in user secrets so it never ends up in the repository:
+
+```powershell
+dotnet user-secrets set "ConnectionStrings:MongoDb" "<Atlas connection string>" --project src/CivicConnect.Web
+dotnet run --project src/CivicConnect.Web
+```
+
+The site opens at http://localhost:5200. The problem types and database indexes are created on startup.
+
+## Accounts
+
+Passwords are stored as hashes, so accounts cannot be typed into Atlas directly. Create them from a file:
+
+1. Copy `accounts.example.json` to `accounts.json` (ignored by git) and fill in each person's name, email, role (`Supervisor`, `Staff` or `Requester`) and a password of at least 8 characters.
+2. Run the import from the repository root:
+
+   ```powershell
+   dotnet run --project src/CivicConnect.Web -- import-accounts "$PWD\accounts.json"
+   ```
+
+It prints `Added` or `Skipped` for each email and imports nothing if any entry is wrong. After that, a supervisor can add people and set new passwords on the **People** page, and anyone can change their own password by clicking their name.
+
+## Tests
+
+```powershell
+dotnet test
+```
