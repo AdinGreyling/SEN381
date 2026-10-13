@@ -5,6 +5,6 @@ namespace CivicConnect.Web.Application.Services;
 
 public sealed class StatusTransitionPolicy : IStatusTransitionPolicy
 {
-    public bool IsAllowed(RequestStatus from, RequestStatus to)
-        => from == to || from.Next() == to;
+    public bool IsAllowed(RequestStatus current, RequestStatus requested)
+        => current == requested || current.Next() == requested;
 }
