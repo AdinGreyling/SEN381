@@ -40,3 +40,17 @@ It prints `Added` or `Skipped` for each email and imports nothing if any entry i
 ```powershell
 dotnet test
 ```
+
+- `RequestServiceTests` and `StatusTransitionPolicyTests` are unit tests of the business rules with in-memory fakes.
+- `Integration/` runs the whole app (controllers, sign-in, views and the MongoDB stores) against a throwaway MongoDB 8 server started by [EphemeralMongo](https://github.com/asimmon/ephemeral-mongo). Each test gets its own empty database, so nothing touches Atlas. The first run downloads MongoDB, which takes a minute or two.
+- Tests are tagged with the requirement they check, e.g. `dotnet test --filter Requirement=FR-07` or `--filter Category=Integration`.
+
+## CI
+
+Every pull request runs:
+
+- **Build with static analysis:** .NET analyzers at `latest-recommended`; any warning fails the build (`Directory.Build.props`).
+- **Tests and coverage:** all tests, with a coverage summary on the run page and the results uploaded as the `test-results` artifact.
+- **Dependencies:** fails if any NuGet package has a known vulnerability. Dependabot opens update PRs weekly.
+- **Secrets:** gitleaks scans the commits for passwords and keys.
+- **CodeQL:** security analysis of the C# code (`codeql.yml`).
