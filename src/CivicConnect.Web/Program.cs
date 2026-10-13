@@ -3,6 +3,7 @@ using CivicConnect.Web.Application.Interfaces;
 using CivicConnect.Web.Application.Services;
 using CivicConnect.Web.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -28,8 +29,18 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddControllersWithViews();
 
+// Render (and any other HTTPS proxy) talks to the app over HTTP and sends X-Forwarded-Proto.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
 AppInfo.EnvironmentName = app.Environment.EnvironmentName;
+
+app.UseForwardedHeaders();
 
 if (app.Environment.IsProduction())
 {

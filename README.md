@@ -22,6 +22,16 @@ dotnet run --project src/CivicConnect.Web
 
 The site opens at http://localhost:5200. The problem types and database indexes are created on startup.
 
+## Demo on Render
+
+The app is a Docker web service (`Dockerfile`, `render.yaml`). Render injects `PORT`; the image listens on it. Set these in the Render dashboard, not in git:
+
+- `ConnectionStrings__MongoDb` — the Atlas connection string
+- `ASPNETCORE_ENVIRONMENT` — `Production`
+- `APP_VERSION` — the release tag, so `/health` and the footer match the demo
+
+In Atlas, allow Render to connect (Network Access `0.0.0.0/0` on the free cluster). The free Render service sleeps when idle, so open the URL once before recording. Accounts already in the `civicconnect` database are the ones the demo signs in with.
+
 ## Accounts
 
 Passwords are stored as hashes, so accounts cannot be typed into Atlas directly. Create them from a file:
