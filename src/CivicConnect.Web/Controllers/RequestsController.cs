@@ -183,7 +183,7 @@ public class RequestsController : Controller
             UnknownRoomRequested: room is not null && selected is null));
     }
 
-    private IActionResult AfterChange(Guid id, (bool Success, string? Error) result, string success, string? notes)
+    private RedirectToActionResult AfterChange(Guid id, (bool Success, string? Error) result, string success, string? notes)
     {
         if (result.Success)
         {

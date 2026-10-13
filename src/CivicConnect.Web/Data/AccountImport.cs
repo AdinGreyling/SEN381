@@ -9,6 +9,7 @@ namespace CivicConnect.Web.Data;
 public static class AccountImport
 {
     private static readonly string[] Roles = [UserRoles.Requester, UserRoles.Staff, UserRoles.Supervisor];
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     public static async Task<int> RunAsync(IServiceProvider services, string path, TextWriter output)
     {
@@ -21,7 +22,7 @@ public static class AccountImport
 
         var entries = JsonSerializer.Deserialize<List<AccountEntry>>(
             await File.ReadAllTextAsync(path),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? [];
+            JsonOptions) ?? [];
 
         var problems = entries
             .Select((entry, index) => (entry, index))
