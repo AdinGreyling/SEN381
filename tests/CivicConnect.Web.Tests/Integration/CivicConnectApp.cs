@@ -70,7 +70,8 @@ public sealed class CivicConnectApp : WebApplicationFactory<Program>
         if (disposing)
         {
             var url = new MongoUrl(_connectionString);
-            new MongoClient(url).DropDatabase(url.DatabaseName);
+            using var client = new MongoClient(url);
+            client.DropDatabase(url.DatabaseName);
         }
 
         base.Dispose(disposing);
@@ -97,7 +98,8 @@ public sealed partial class Browser(HttpClient client)
         Assert.True(token.Success, $"No antiforgery token on {formPage}.");
 
         fields["__RequestVerificationToken"] = WebUtility.HtmlDecode(token.Groups[1].Value);
-        return await Client.PostAsync(action, new FormUrlEncodedContent(fields));
+        using var form = new FormUrlEncodedContent(fields);
+        return await Client.PostAsync(action, form);
     }
 
     [GeneratedRegex("name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"")]
